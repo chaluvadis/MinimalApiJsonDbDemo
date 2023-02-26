@@ -1,14 +1,13 @@
 namespace Products.Api.Routes;
 using Products.Api.Models;
-public class ProductRoutes
+public static class ProductRoutes
 {
-    internal string GetProductsRoute = "api/products";
-    internal string GetProductByIdRoute = "api/products/{id}";
-    internal string CreateProductRoute = "api/products";
-    internal string UpdateProductRoute = "api/products/{id}";
-    internal string DeleteProductRoute = "api/products/{id}";
-
-    public void RegisterProductRoutes(WebApplication app)
+    internal static string GetProductsRoute = "api/products";
+    internal static string GetProductByIdRoute = "api/products/{id}";
+    internal static string CreateProductRoute = "api/products";
+    internal static string UpdateProductRoute = "api/products/{id}";
+    internal static string DeleteProductRoute = "api/products/{id}";
+    public static void MapProductRoutes(this IEndpointRouteBuilder app)
     {
         app.MapGet(GetProductsRoute, () => Product.SampleData());
 
@@ -16,6 +15,7 @@ public class ProductRoutes
             Product.SampleData().FirstOrDefault(a => a.Id == id) is { } product
                 ? Results.Ok(product)
                 : Results.NotFound());
+
         app.MapPost(CreateProductRoute, (Product product) =>
         {
             var finalProduct = product with
@@ -25,6 +25,7 @@ public class ProductRoutes
             Product.SampleData().Add(finalProduct);
             return Results.Created($"/products/{finalProduct.Id}", finalProduct);
         });
+
         app.MapPut(UpdateProductRoute, (int id, Product product) =>
         {
             var existingProduct = Product.SampleData().FirstOrDefault(a => a.Id == id);
@@ -40,6 +41,7 @@ public class ProductRoutes
             };
             return Results.Ok(finalProduct);
         });
+
         app.MapDelete(DeleteProductRoute, (int id) =>
         {
             var product = Product.SampleData().FirstOrDefault(a => a.Id == id);
